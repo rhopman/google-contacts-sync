@@ -1,0 +1,104 @@
+<mat-card
+  class="contact-card"
+  [class.greyed-out]="greyedOut()"
+  [class.clickable]="!!googleContactsUrl()"
+  (click)="openInGoogleContacts()"
+  [attr.title]="googleContactsUrl() ? 'Click to open in Google Contacts' : null"
+>
+  @if (contact() ?? false) {
+    <div class="card-content">
+      <!-- Avatar Column -->
+      <div class="avatar-column">
+        @if (contact()?.photos?.[0]?.url) {
+          <div class="avatar">
+            <img [src]="contact()?.photos?.[0]?.url" alt="Avatar" width="40" height="40" />
+          </div>
+        } @else {
+          <div class="avatar placeholder">
+            <span>👤</span>
+          </div>
+        }
+      </div>
+
+      <!-- Info Column -->
+      <div class="info-column">
+        <div class="name">{{ contact()?.names?.[0]?.displayName || "No Name" }}</div>
+        @if (contact()?.emailAddresses?.length) {
+          @for (email of contact()?.emailAddresses; track email.value) {
+            @if (email?.value) {
+              <div class="email">
+                <mat-icon inline style="vertical-align: middle">mail</mat-icon>
+                {{ email.value }}
+              </div>
+            }
+          }
+        }
+
+        @if (contact()?.phoneNumbers?.length) {
+          @for (phone of contact()?.phoneNumbers; track phone.value) {
+            @if (phone?.value) {
+              <div class="phone">
+                <mat-icon inline style="vertical-align: middle">phone</mat-icon>
+                {{ phone.value }}
+              </div>
+            }
+          }
+        }
+
+        @if (contact()?.addresses?.length) {
+          @for (address of contact()?.addresses; track address.formattedValue) {
+            @if (address?.formattedValue) {
+              <div class="address">
+                <mat-icon inline style="vertical-align: middle">location_on</mat-icon>
+                {{ address.formattedValue }}
+              </div>
+            }
+          }
+        }
+
+        @if (contact()?.birthdays?.length) {
+          @for (bday of contact()?.birthdays; track bday.date) {
+            @if (bday?.date) {
+              <div class="birthday">
+                <mat-icon inline style="vertical-align: middle">cake</mat-icon>
+                {{ formatBirthday(bday) }}
+              </div>
+            }
+          }
+        }
+
+        <!-- Biographies are treated as notes in the UI. -->
+        @if (contact()?.biographies?.length) {
+          @for (bio of contact()?.biographies; track bio.value) {
+            @if (bio?.value) {
+              <div class="note" title="{{ bio.value }}">
+                <mat-icon inline style="vertical-align: middle">note</mat-icon>
+                <span class="note-text">{{ bio.value }}</span>
+              </div>
+            }
+          }
+        }
+      </div>
+
+      <!-- Actions Column -->
+      <div class="actions-column">
+        <button
+          mat-icon-button
+          class="action-button refresh-button"
+          (click)="onRefreshClick($event)"
+          title="Refresh this contact"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="action-button delete-button"
+          (click)="onDeleteClick($event)"
+          title="Delete this contact"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+</mat-card>

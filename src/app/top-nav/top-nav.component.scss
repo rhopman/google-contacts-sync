@@ -1,0 +1,50 @@
+mat-toolbar {
+  color: var(--mat-sys-primary);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 56px;
+  border-bottom: none;
+  box-shadow: 0 2px 4px var(--mat-sys-background);
+  background: none;
+  z-index: 10;
+}
+
+.nav-left .app-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.icon-link {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.icon-link:hover {
+  color: var(--mat-sys-inverse-primary);
+}
+
+button.icon-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}

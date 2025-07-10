@@ -1,0 +1,15 @@
+{
+  "plugins": [
+    "prettier-plugin-multiline-arrays"
+  ],
+  "printWidth": 100,
+  "multilineArraysWrapThreshold": 0,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
+}
