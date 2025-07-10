@@ -1,0 +1,46 @@
+@use "@angular/material" as mat;
+@use "theme-colors" as my-theme;
+
+html {
+  color-scheme: light dark;
+
+  @include mat.theme(
+    (
+      theme-type: color-scheme,
+      color: (
+        primary: my-theme.$primary-palette,
+        tertiary: my-theme.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+      shape: (
+        small: 2px,
+        medium: 4px,
+        large: 6px,
+      ),
+    )
+  );
+
+  // Use high contrast values when users prefer contrast
+  @media (prefers-contrast: more) {
+    @include my-theme.high-contrast-overrides(color-scheme);
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+}

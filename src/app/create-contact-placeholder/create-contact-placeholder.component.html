@@ -1,0 +1,18 @@
+<div class="card-inner create-contact-placeholder">
+  <button
+    mat-stroked-button
+    color="primary"
+    class="create-contact-btn"
+    [disabled]="disabled()"
+    (click)="create.emit()"
+  >
+    @if (isCreating()) {
+      Creating...
+    } @else {
+      Create
+    }
+  </button>
+  <div class="missing-contact-info">
+    {{ name() }}
+  </div>
+</div>

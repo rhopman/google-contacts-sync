@@ -1,0 +1,44 @@
+<div class="account-column {{ side() }}">
+  <div class="column-btn-bar">
+    @if (!accountConnected) {
+      <button mat-raised-button color="primary" class="connect-btn" (click)="connectAccount()">
+        Connect {{ label() }}
+      </button>
+    } @else {
+      <button mat-stroked-button color="warn" class="connect-btn" (click)="disconnectAccount()">
+        Disconnect
+      </button>
+    }
+  </div>
+  @if (accountConnected) {
+    <div class="connected">
+      @if (accountName()) {
+        <a
+          [href]="getGoogleContactsUrl(authUser)"
+          target="_blank"
+          class="account-name-link"
+          [title]="'Open Google Contacts for ' + accountName()"
+        >
+          {{ accountName() }}
+        </a>
+      } @else {
+        <a
+          [href]="getGoogleContactsUrl(authUser)"
+          target="_blank"
+          class="account-name-link"
+          [title]="'Open Google Contacts for ' + label()"
+        >
+          {{ label() }} Connected
+        </a>
+      }
+    </div>
+    <mat-form-field appearance="outline" class="select-group-field">
+      <mat-label>Select Contact Group</mat-label>
+      <mat-select [value]="selectedGroup()?.value" (valueChange)="selectedGroup()?.set($event)">
+        @for (group of groups() ?? []; track trackByGroupResourceName($index, group)) {
+          <mat-option [value]="group.resourceName">{{ group.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+</div>

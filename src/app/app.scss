@@ -1,0 +1,147 @@
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  column-gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.main-grid-divider {
+  grid-column: 2;
+  width: 1px;
+  height: 100%;
+  background: var(--mat-sys-surface-container-high);
+}
+
+.toggle-row {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.reload-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.reload-icon-container.left {
+  grid-column: 1;
+}
+
+.reload-icon-container.right {
+  grid-column: 3;
+}
+
+.reload-btn {
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: rotate(90deg);
+    color: var(--mat-sys-secondary);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.contact-card-grid-cell.left {
+  grid-column: 1;
+}
+
+.contact-card-grid-cell.right {
+  grid-column: 3;
+}
+
+.sync-buttons {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.sync-btn {
+  width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+
+  .mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.sync-btn-right {
+  transition: transform 0.2s ease-in-out;
+}
+
+.sync-btn-left {
+  transition: transform 0.2s ease-in-out;
+}
+
+.explanation {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 2rem;
+
+  .explanation-inner {
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto;
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--mat-sys-primary);
+      letter-spacing: -1px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: var(--mat-sys-on-surface);
+      margin-bottom: 1.5rem;
+    }
+
+    ul {
+      text-align: left;
+      margin: 0 auto 1.5rem;
+      max-width: 400px;
+      color: var(--mat-sys-on-surface);
+      font-size: 1.05rem;
+    }
+  }
+
+  .support {
+    text-align: center;
+
+    img {
+      margin-top: 0.5rem;
+      filter: saturate(0.7);
+    }
+  }
+}

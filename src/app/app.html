@@ -1,0 +1,274 @@
+<app-top-nav></app-top-nav>
+<main class="main-grid">
+  <!-- LEFT ACCOUNT CONTROLS -->
+  <app-account-controls
+    [side]="'left'"
+    [accountNumber]="1"
+    [accountName]="account1Name()"
+    [groups]="groups1()"
+    [selectedGroup]="{ value: selectedGroup1(), set: selectedGroup1.set }"
+    [label]="account1LabelFn()"
+  ></app-account-controls>
+
+  <div class="main-grid-divider" style="grid-row: 1"></div>
+
+  <!-- RIGHT ACCOUNT CONTROLS -->
+  <app-account-controls
+    [side]="'right'"
+    [accountNumber]="2"
+    [accountName]="account2Name()"
+    [groups]="groups2()"
+    [selectedGroup]="{ value: selectedGroup2(), set: selectedGroup2.set }"
+    [label]="account2LabelFn()"
+  ></app-account-controls>
+
+  <!-- TOGGLE AND RELOAD ICONS ROW -->
+  @if (selectedGroup1() || selectedGroup2()) {
+    <!-- LEFT RELOAD ICON -->
+    @if (account1Connected() && selectedGroup1()) {
+      <div class="reload-icon-container left" style="grid-row: 2">
+        <button
+          mat-icon-button
+          color="primary"
+          class="reload-btn"
+          [disabled]="loadingContacts1()"
+          (click)="reloadContacts1()"
+          title="Reload contacts"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    }
+
+    <!-- SHOW IDENTICAL CONTACTS TOGGLE (CENTER) -->
+    @if (account1Connected() && selectedGroup1() && account2Connected() && selectedGroup2()) {
+      <div class="toggle-row">
+        <mat-slide-toggle
+          [checked]="showIdenticalContacts()"
+          (change)="showIdenticalContacts.set($event.checked)"
+          color="primary"
+        >
+          Show identical contacts
+        </mat-slide-toggle>
+      </div>
+    } @else if (selectedGroup1() || selectedGroup2()) {
+      <!-- When only one group is selected, show a divider -->
+      <div class="main-grid-divider" style="grid-row: 2"></div>
+    }
+
+    <!-- RIGHT RELOAD ICON -->
+    @if (account2Connected() && selectedGroup2()) {
+      <div class="reload-icon-container right" style="grid-row: 2">
+        <button
+          mat-icon-button
+          color="primary"
+          class="reload-btn"
+          [disabled]="loadingContacts2()"
+          (click)="reloadContacts2()"
+          title="Reload contacts"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    }
+  }
+
+  @if ((account1Connected() && selectedGroup1()) || (account2Connected() && selectedGroup2())) {
+    <!-- CONTACT LIST TEMPLATE -->
+    <ng-template
+      #contactList
+      let-side="side"
+      let-accountConnected="accountConnected"
+      let-loading="loading"
+      let-contacts="contacts"
+      let-alignedContacts="alignedContacts"
+      let-selectedGroup="selectedGroup"
+      let-otherSelectedGroup="otherSelectedGroup"
+      let-isLeft="isLeft"
+    >
+      @if (accountConnected() && selectedGroup()) {
+        @if (loading()) {
+          <div class="contact-card-grid-cell {{ side }}" [style.grid-row]="3">
+            <div class="card-inner"><div>Loading contacts...</div></div>
+          </div>
+        } @else if (otherSelectedGroup() && alignedContacts().length > 0) {
+          @for (pair of alignedContacts(); track trackByPairName($index, pair); let i = $index) {
+            @if (isLeft ? pair.contact1 : pair.contact2) {
+              <div class="contact-card-grid-cell {{ side }}" [style.grid-row]="i + 3">
+                <div class="card-inner">
+                  <app-contact-card
+                    [contact]="isLeft ? pair.contact1 : pair.contact2"
+                    [greyedOut]="pair.contactsAreIdentical"
+                    [authUser]="isLeft ? account1AuthUser() : account2AuthUser()"
+                    (refreshContact)="refreshContact($event, isLeft ? 1 : 2)"
+                    (deleteContact)="deleteContact($event, isLeft ? 1 : 2)"
+                  ></app-contact-card>
+                </div>
+              </div>
+            } @else {
+              <!-- Show Create button when contact is missing -->
+              <div class="contact-card-grid-cell {{ side }}" [style.grid-row]="i + 3">
+                <app-create-contact-placeholder
+                  [side]="side"
+                  [disabled]="
+                    isLeft
+                      ? !account1Connected() || isCreatingContact(1, pair.name)
+                      : !account2Connected() || isCreatingContact(2, pair.name)
+                  "
+                  [isCreating]="
+                    isLeft ? isCreatingContact(1, pair.name) : isCreatingContact(2, pair.name)
+                  "
+                  [name]="pair.name"
+                  (create)="
+                    isLeft ? createContact(1, pair.contact2!) : createContact(2, pair.contact1!)
+                  "
+                ></app-create-contact-placeholder>
+              </div>
+            }
+          }
+        } @else if (contacts().length > 0) {
+          @for (
+            contact of contacts();
+            track trackByContactResourceName($index, contact);
+            let i = $index
+          ) {
+            <div class="contact-card-grid-cell {{ side }}" [style.grid-row]="i + 3">
+              <div class="card-inner">
+                <app-contact-card
+                  [contact]="contact"
+                  [authUser]="isLeft ? account1AuthUser() : account2AuthUser()"
+                  (refreshContact)="refreshContact($event, isLeft ? 1 : 2)"
+                  (deleteContact)="deleteContact($event, isLeft ? 1 : 2)"
+                ></app-contact-card>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="contact-card-grid-cell {{ side }}" [style.grid-row]="3">
+            <div class="card-inner"><div>No contacts to align.</div></div>
+          </div>
+        }
+      }
+    </ng-template>
+
+    <!-- LEFT CONTACT LIST (account1) -->
+    <ng-container
+      *ngTemplateOutlet="
+        contactList;
+        context: {
+          side: 'left',
+          accountConnected: account1Connected,
+          loading: loadingContacts1,
+          contacts: contacts1,
+          alignedContacts: filteredAlignedContacts,
+          selectedGroup: selectedGroup1,
+          otherSelectedGroup: selectedGroup2,
+          isLeft: true,
+        }
+      "
+    ></ng-container>
+
+    <!-- DIVIDER -->
+    @if (selectedGroup1() && selectedGroup2()) {
+      <!-- When both accounts are selected, show dividers for each aligned contact pair -->
+      @for (
+        pair of filteredAlignedContacts();
+        track trackByPairName($index, pair);
+        let i = $index
+      ) {
+        <div class="main-grid-divider" [style.grid-row]="i + 3">
+          @if (pair.contact1 && pair.contact2 && !pair.contactsAreIdentical) {
+            <div class="sync-buttons">
+              <button
+                mat-mini-fab
+                class="sync-btn sync-btn-right"
+                [disabled]="!account2Connected()"
+                (click)="syncContact(pair.contact1!, pair.contact2!, 'left-to-right')"
+                title="Sync left contact to right account"
+              >
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+              <button
+                mat-mini-fab
+                class="sync-btn sync-btn-left"
+                [disabled]="!account1Connected()"
+                (click)="syncContact(pair.contact2!, pair.contact1!, 'right-to-left')"
+                title="Sync right contact to left account"
+              >
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+            </div>
+          } @else if (pair.contact1 && pair.contact2 && pair.contactsAreIdentical) {
+            <div class="sync-buttons">
+              <button
+                mat-mini-fab
+                class="sync-btn rename-btn"
+                [disabled]="!account1Connected() || !account2Connected()"
+                (click)="
+                  renameBothContacts({
+                    contact1: pair.contact1!,
+                    contact2: pair.contact2!,
+                    name: pair.name,
+                  })
+                "
+                title="Rename both contacts"
+              >
+                <mat-icon>drive_file_rename_outline</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <!-- When only one account is selected, show simple dividers -->
+      @for (x of dummyContacts(); track x; let i = $index) {
+        <div class="main-grid-divider" [style.grid-row]="i + 3"></div>
+      }
+    }
+
+    <!-- RIGHT CONTACT LIST (account2) -->
+    <ng-container
+      *ngTemplateOutlet="
+        contactList;
+        context: {
+          side: 'right',
+          accountConnected: account2Connected,
+          loading: loadingContacts2,
+          contacts: contacts2,
+          alignedContacts: filteredAlignedContacts,
+          selectedGroup: selectedGroup2,
+          otherSelectedGroup: selectedGroup1,
+          isLeft: false,
+        }
+      "
+    ></ng-container>
+  } @else {
+    <!-- Display an explanation of how to use the app -->
+    <div class="explanation">
+      <div class="explanation-inner">
+        <h1>Welcome to Google Contacts Sync</h1>
+        <p>
+          Synchronize your contacts between two Google accounts. Connect both accounts, select the
+          groups you want to sync, and manage your contacts.
+        </p>
+        <ul>
+          <li>Connect your first Google account on the left.</li>
+          <li>Connect your second Google account on the right.</li>
+          <li>Select a contact group for each account.</li>
+          <li>Review, sync, or merge contacts with a single click.</li>
+        </ul>
+      </div>
+      <div class="support">
+        <p>
+          If you enjoy this tool, feel free to <br />
+          <a href="https://www.buymeacoffee.com/rhopman" target="_blank"
+            ><img
+              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+              alt="Buy Me A Coffee"
+              style="height: 60px; width: 217px"
+          /></a>
+        </p>
+      </div>
+    </div>
+  }
+</main>
