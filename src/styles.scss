@@ -12,12 +12,6 @@ html {
         tertiary: my-theme.$tertiary-palette,
       ),
       typography: Roboto,
-      density: 0,
-      shape: (
-        small: 2px,
-        medium: 4px,
-        large: 6px,
-      ),
     )
   );
 
@@ -27,9 +21,19 @@ html {
   }
 }
 
+$button-corner-radius: 12px;
+
 html,
 body {
   height: 100%;
+
+  // Override button shape tokens to reduce roundness
+  --mat-button-elevated-container-shape: #{$button-corner-radius};
+  --mat-button-filled-container-shape: #{$button-corner-radius};
+  --mat-button-icon-container-shape: #{$button-corner-radius};
+  --mat-button-outlined-container-shape: #{$button-corner-radius};
+  --mat-button-protected-container-shape: #{$button-corner-radius};
+  --mat-button-text-container-shape: #{$button-corner-radius};
 }
 
 html.light {
