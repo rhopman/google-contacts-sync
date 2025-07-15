@@ -145,3 +145,12 @@
     }
   }
 }
+
+.no-contacts-to-show {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}

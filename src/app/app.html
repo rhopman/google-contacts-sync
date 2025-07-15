@@ -151,24 +151,20 @@
       }
     </ng-template>
 
-    <!-- Show single centered identical message if all contacts are identical and toggle is off -->
-    @if (
+    <!-- Show single centered message if no contacts or all are identical and toggle is off -->
+    @if (selectedGroup1() && selectedGroup2() && alignedContacts().length === 0) {
+      <div class="no-contacts-to-show">
+        <div class="card-inner">
+          <div>No contacts found.</div>
+        </div>
+      </div>
+    } @else if (
       selectedGroup1() &&
       selectedGroup2() &&
       allAlignedContactsIdentical() &&
       !showIdenticalContacts()
     ) {
-      <div
-        class="identical-contacts-message"
-        style="
-          grid-column: 1 / -1;
-          grid-row: 3;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 120px;
-        "
-      >
+      <div class="no-contacts-to-show">
         <div class="card-inner">
           <div>All {{ alignedContacts().length }} contacts are identical.</div>
         </div>
