@@ -161,6 +161,14 @@ export class App {
     );
   });
 
+  /**
+   * True if all aligned contacts are identical and there is at least one aligned contact.
+   */
+  protected readonly allAlignedContactsIdentical = computed(() => {
+    const aligned = this.alignedContacts();
+    return aligned.length > 0 && aligned.every((pair) => pair.contactsAreIdentical);
+  });
+
   constructor() {
     this.googleAuth.init();
     effect(() => {
@@ -249,14 +257,6 @@ export class App {
     if (token2 && group2) {
       this.peopleContacts.fetchContacts(token2, group2, 2);
     }
-  }
-
-  private getStoredGroup(key: string): string | null {
-    return this.localStorage.getItem<string>(key);
-  }
-
-  private getStoredBoolean(key: string, defaultValue: boolean): boolean {
-    return this.localStorage.getBoolean(key, defaultValue);
   }
 
   private storeGroup(key: string, value: string | null): void {

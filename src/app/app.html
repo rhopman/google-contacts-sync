@@ -151,97 +151,121 @@
       }
     </ng-template>
 
-    <!-- LEFT CONTACT LIST (account1) -->
-    <ng-container
-      *ngTemplateOutlet="
-        contactList;
-        context: {
-          side: 'left',
-          accountConnected: account1Connected,
-          loading: loadingContacts1,
-          contacts: contacts1,
-          alignedContacts: filteredAlignedContacts,
-          selectedGroup: selectedGroup1,
-          otherSelectedGroup: selectedGroup2,
-          isLeft: true,
-        }
-      "
-    ></ng-container>
-
-    <!-- DIVIDER -->
-    @if (selectedGroup1() && selectedGroup2()) {
-      <!-- When both accounts are selected, show dividers for each aligned contact pair -->
-      @for (
-        pair of filteredAlignedContacts();
-        track trackByPairName($index, pair);
-        let i = $index
-      ) {
-        <div class="main-grid-divider" [style.grid-row]="i + 3">
-          @if (pair.contact1 && pair.contact2 && !pair.contactsAreIdentical) {
-            <div class="sync-buttons">
-              <button
-                mat-mini-fab
-                class="sync-btn sync-btn-right"
-                [disabled]="!account2Connected()"
-                (click)="syncContact(pair.contact1!, pair.contact2!, 'left-to-right')"
-                title="Sync left contact to right account"
-              >
-                <mat-icon>arrow_forward</mat-icon>
-              </button>
-              <button
-                mat-mini-fab
-                class="sync-btn sync-btn-left"
-                [disabled]="!account1Connected()"
-                (click)="syncContact(pair.contact2!, pair.contact1!, 'right-to-left')"
-                title="Sync right contact to left account"
-              >
-                <mat-icon>arrow_back</mat-icon>
-              </button>
-            </div>
-          } @else if (pair.contact1 && pair.contact2 && pair.contactsAreIdentical) {
-            <div class="sync-buttons">
-              <button
-                mat-mini-fab
-                class="sync-btn rename-btn"
-                [disabled]="!account1Connected() || !account2Connected()"
-                (click)="
-                  renameBothContacts({
-                    contact1: pair.contact1!,
-                    contact2: pair.contact2!,
-                    name: pair.name,
-                  })
-                "
-                title="Rename both contacts"
-              >
-                <mat-icon>drive_file_rename_outline</mat-icon>
-              </button>
-            </div>
-          }
+    <!-- Show single centered identical message if all contacts are identical and toggle is off -->
+    @if (
+      selectedGroup1() &&
+      selectedGroup2() &&
+      allAlignedContactsIdentical() &&
+      !showIdenticalContacts()
+    ) {
+      <div
+        class="identical-contacts-message"
+        style="
+          grid-column: 1 / -1;
+          grid-row: 3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 120px;
+        "
+      >
+        <div class="card-inner">
+          <div>All {{ alignedContacts().length }} contacts are identical.</div>
         </div>
-      }
+      </div>
     } @else {
-      <!-- When only one account is selected, show simple dividers -->
-      @for (x of dummyContacts(); track x; let i = $index) {
-        <div class="main-grid-divider" [style.grid-row]="i + 3"></div>
-      }
-    }
+      <!-- LEFT CONTACT LIST (account1) -->
+      <ng-container
+        *ngTemplateOutlet="
+          contactList;
+          context: {
+            side: 'left',
+            accountConnected: account1Connected,
+            loading: loadingContacts1,
+            contacts: contacts1,
+            alignedContacts: filteredAlignedContacts,
+            selectedGroup: selectedGroup1,
+            otherSelectedGroup: selectedGroup2,
+            isLeft: true,
+          }
+        "
+      ></ng-container>
 
-    <!-- RIGHT CONTACT LIST (account2) -->
-    <ng-container
-      *ngTemplateOutlet="
-        contactList;
-        context: {
-          side: 'right',
-          accountConnected: account2Connected,
-          loading: loadingContacts2,
-          contacts: contacts2,
-          alignedContacts: filteredAlignedContacts,
-          selectedGroup: selectedGroup2,
-          otherSelectedGroup: selectedGroup1,
-          isLeft: false,
+      <!-- DIVIDER -->
+      @if (selectedGroup1() && selectedGroup2()) {
+        <!-- When both accounts are selected, show dividers for each aligned contact pair -->
+        @for (
+          pair of filteredAlignedContacts();
+          track trackByPairName($index, pair);
+          let i = $index
+        ) {
+          <div class="main-grid-divider" [style.grid-row]="i + 3">
+            @if (pair.contact1 && pair.contact2 && !pair.contactsAreIdentical) {
+              <div class="sync-buttons">
+                <button
+                  mat-mini-fab
+                  class="sync-btn sync-btn-right"
+                  [disabled]="!account2Connected()"
+                  (click)="syncContact(pair.contact1!, pair.contact2!, 'left-to-right')"
+                  title="Sync left contact to right account"
+                >
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+                <button
+                  mat-mini-fab
+                  class="sync-btn sync-btn-left"
+                  [disabled]="!account1Connected()"
+                  (click)="syncContact(pair.contact2!, pair.contact1!, 'right-to-left')"
+                  title="Sync right contact to left account"
+                >
+                  <mat-icon>arrow_back</mat-icon>
+                </button>
+              </div>
+            } @else if (pair.contact1 && pair.contact2 && pair.contactsAreIdentical) {
+              <div class="sync-buttons">
+                <button
+                  mat-mini-fab
+                  class="sync-btn rename-btn"
+                  [disabled]="!account1Connected() || !account2Connected()"
+                  (click)="
+                    renameBothContacts({
+                      contact1: pair.contact1!,
+                      contact2: pair.contact2!,
+                      name: pair.name,
+                    })
+                  "
+                  title="Rename both contacts"
+                >
+                  <mat-icon>drive_file_rename_outline</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
         }
-      "
-    ></ng-container>
+      } @else {
+        <!-- When only one account is selected, show simple dividers -->
+        @for (x of dummyContacts(); track x; let i = $index) {
+          <div class="main-grid-divider" [style.grid-row]="i + 3"></div>
+        }
+      }
+
+      <!-- RIGHT CONTACT LIST (account2) -->
+      <ng-container
+        *ngTemplateOutlet="
+          contactList;
+          context: {
+            side: 'right',
+            accountConnected: account2Connected,
+            loading: loadingContacts2,
+            contacts: contacts2,
+            alignedContacts: filteredAlignedContacts,
+            selectedGroup: selectedGroup2,
+            otherSelectedGroup: selectedGroup1,
+            isLeft: false,
+          }
+        "
+      ></ng-container>
+    }
   } @else {
     <!-- Display an explanation of how to use the app -->
     <div class="explanation">
