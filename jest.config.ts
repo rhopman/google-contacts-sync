@@ -7,23 +7,6 @@ export default {
   setupFilesAfterEnv: [
     '<rootDir>/setup-jest.ts',
   ],
-  testEnvironment: 'jsdom',
-  moduleFileExtensions: [
-    'ts',
-    'html',
-    'js',
-    'json',
-  ],
-  transform: {
-    '^.+\\.(ts|js|html)$': [
-      'ts-jest',
-      {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
-        stringifyContentPathRegex: '\\.html$',
-        useESM: true,
-      },
-    ],
-  },
   collectCoverage: true,
   coverageThreshold: {
     global: {
@@ -39,8 +22,5 @@ export default {
   ],
   testMatch: [
     '**/+(*.)+(spec).+(ts)',
-  ],
-  transformIgnorePatterns: [
-    'node_modules/(?!.*\\.mjs$)',
   ],
 };
